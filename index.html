@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HanxxyModz - Canva Lifetime</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --transition-speed: 600ms;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            background-color: #0f0c29;
+            background-image: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%), linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            color: #fff;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        #stars-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: move-stars 50s linear infinite;
+        }
+
+        @keyframes move-stars {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-2000px);
+            }
+        }
+
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            visibility: hidden;
+            perspective: 1200px;
+            /* Changed: Added perspective for 3D */
+        }
+
+        .page.active {
+            visibility: visible;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+        }
+
+        /* === NEW: Parallax 3D Effect styles for the first card === */
+        #interactive-card {
+            transform-style: preserve-3d;
+            transition: transform 0.1s linear, opacity 0.5s ease-out;
+        }
+
+        /* === END NEW === */
+
+        .page.active .card.animate-in {
+            animation: fadeInScale var(--transition-speed) ease-out forwards;
+        }
+
+        @keyframes fadeInScale {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* === NEW: 3D Flip Page Transition animations === */
+        .page .card.animate-flip-out {
+            animation: flipOut 600ms ease-in forwards;
+            transform-origin: 50% 50%;
+        }
+
+        @keyframes flipOut {
+            from {
+                transform: rotateY(0deg) scale(1);
+                opacity: 1;
+            }
+
+            to {
+                transform: rotateY(-90deg) scale(0.9);
+                opacity: 0;
+            }
+        }
+
+        .page.active .card.animate-flip-in {
+            animation: flipIn 600ms ease-out 200ms forwards;
+            /* Added delay */
+            transform-origin: 50% 50%;
+            opacity: 0;
+            /* Start with opacity 0 before animation */
+        }
+
+        @keyframes flipIn {
+            from {
+                transform: rotateY(90deg) scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: rotateY(0deg) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* === END NEW === */
+
+        .glow-text {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 30px #00bfff;
+            white-space: nowrap;
+        }
+
+        .char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(-50px) scale(0.5) rotate(360deg);
+            animation: char-appear 0.5s ease forwards;
+        }
+
+        @keyframes char-appear {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotate(0);
+            }
+        }
+
+        .countdown-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .countdown {
+            font-size: 4.5rem;
+            font-weight: 700;
+            color: #00bfff;
+            z-index: 2;
+        }
+
+        .countdown-svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .countdown-svg-circle,
+        .countdown-svg-circle-bg {
+            fill: none;
+            stroke-width: 8;
+        }
+
+        .countdown-svg-circle {
+            stroke: #8a2be2;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .countdown-svg-circle-bg {
+            stroke: rgba(255, 255, 255, 0.1);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 45px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            color: #fff;
+            background: #8a2be2;
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .button:hover::before {
+            left: 100%;
+        }
+
+        .button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.6);
+        }
+
+        .button:active,
+        #interactive-card:active {
+            transform: scale(0.98) translateY(0);
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.5);
+            transition-duration: 0.1s;
+        }
+
+        /* Page 2 specific */
+        #page2 .card {
+            padding: 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37), inset 0 0 20px rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(138, 43, 226, 0.5);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #page2 .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(138, 43, 226, 0.5);
+        }
+
+        #page2 .card-link {
+            display: block;
+            padding: 50px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        #page2 .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 35px;
+        }
+
+        #page2 .title-group {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        #page2 .logo-img {
+            height: 55px;
+            width: 55px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            animation: gentle-pulse 3s infinite ease-in-out;
+            /* === NEW: Logo pulse animation === */
+        }
+
+        #page2 .main-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            animation: tricolor-glow 6s linear infinite;
+            white-space: nowrap;
+        }
+
+        /* === NEW: Pulsing animation for logo and button === */
+        @keyframes gentle-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+        }
+
+        #page2 .button {
+            animation: pulse-glow 2.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 25px rgba(138, 43, 226, 0.9);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+            }
+        }
+
+        /* === END NEW === */
+
+        @keyframes tricolor-glow {
+            0% {
+                text-shadow: 0 0 10px #FF9933;
+            }
+
+            33% {
+                text-shadow: 0 0 10px #FFFFFF;
+            }
+
+            66% {
+                text-shadow: 0 0 10px #138808;
+            }
+
+            100% {
+                text-shadow: 0 0 10px #FF9933;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .card {
+                padding: 25px;
+            }
+
+            .glow-text {
+                font-size: 1.5rem;
+            }
+
+            #page2 .card {
+                width: 90vw;
+                max-width: 400px;
+            }
+
+            #page2 .main-text {
+                font-size: 1.3rem;
+                white-space: normal;
+                text-align: center;
+            }
+
+            #page2 .logo-img {
+                height: 40px;
+                width: 40px;
+            }
+
+            #page2 .title-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            #page2 .content-wrapper {
+                gap: 30px;
+            }
+
+            #page2 .card-link {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="stars-container"></div>
+
+    <!-- Page 1 -->
+    <div class="page active" id="page1">
+        <div class="card" id="interactive-card">
+            <h1 class="glow-text" id="animated-title"></h1>
+            <div class="countdown-wrapper">
+                <svg class="countdown-svg">
+                    <circle class="countdown-svg-circle-bg" cx="75" cy="75" r="71"></circle>
+                    <circle class="countdown-svg-circle" id="countdown-circle" cx="75" cy="75" r="71"></circle>
+                </svg>
+                <div class="countdown" id="count">5</div>
+            </div>
+            <button class="button" onclick="skipCountdown()">Skip</button>
+        </div>
+    </div>
+
+    <!-- Page 2 -->
+    <div class="page" id="page2">
+        <div class="card" id="card2">
+            <a href="https://www.oxaam.com/serviceaccess.php?activation_key=GW69ETWJYL6Y668" class="card-link" target="_blank">
+                <div class="content-wrapper">
+                    <div class="title-group">
+                        <img src="https://i.ibb.co/fdFLWbG1/Screenshot-20250930-110205-Google-Play-Store.png" alt="Chatgpt Logo" class="logo-img">
+                        <h1 class="main-text">Chatgpt 5 Lifetime</h1>
+                    </div>
+                    <span class="button">Join Now</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const page1 = document.getElementById("page1");
+        const page2 = document.getElementById("page2");
+        const countEl = document.getElementById("count");
+        const titleEl = document.getElementById("animated-title");
+        const card1 = document.getElementById("interactive-card");
+        const card2 = document.getElementById("card2"); // Defined card2
+        const countdownCircle = document.getElementById("countdown-circle");
+
+        const initialCount = 5;
+        let count = initialCount;
+        let countdownInterval;
+
+        const CIRCLE_RADIUS = countdownCircle.r.baseVal.value;
+        const CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS;
+        countdownCircle.style.strokeDasharray = `${CIRCUMFERENCE} ${CIRCUMFERENCE}`;
+
+        function setProgress(percent) {
+            const offset = CIRCUMFERENCE - (percent / 100) * CIRCUMFERENCE;
+            countdownCircle.style.strokeDashoffset = offset;
+        }
+
+        const starsContainer = document.getElementById('stars-container');
+        for (let i = 0; i < 200; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 2000}px`;
+            star.style.animationDelay = `${Math.random() * 50}s`;
+            star.style.animationDuration = `50s`;
+            starsContainer.appendChild(star);
+        }
+
+        // This function now just handles the initial animation
+        function animateIn(page) {
+            page.classList.add('active');
+            const card = page.querySelector('.card');
+            if (card) {
+                card.classList.add('animate-in');
+            }
+        }
+
+        function animateTitle() {
+            const text = "🤖 Mod By HanxxyModz 🤖";
+            titleEl.innerHTML = '';
+            text.split('').forEach((char, index) => {
+                const span = document.createElement('span');
+                span.className = 'char';
+                span.textContent = char === ' ' ? '\u00A0' : char;
+                span.style.animationDelay = `${index * 50}ms`;
+                titleEl.appendChild(span);
+            });
+        }
+
+        function startCountdown() {
+            setProgress(0);
+            count = initialCount;
+            countEl.textContent = count;
+            countdownInterval = setInterval(() => {
+                count--;
+                countEl.textContent = count;
+                const progress = ((initialCount - count) / initialCount) * 100;
+                setProgress(progress);
+                if (count <= 0) {
+                    clearInterval(countdownInterval);
+                    setProgress(100);
+                    setTimeout(showPage2, 500);
+                }
+            }, 1000);
+        }
+
+        function showPage2() {
+            // Use new 3D flip animation
+            card1.classList.remove('animate-in');
+            card1.classList.add('animate-flip-out');
+
+            setTimeout(() => {
+                page1.classList.remove('active');
+                page2.classList.add('active');
+                card2.classList.add('animate-flip-in');
+            }, 200); // Start second page animation slightly after first one starts
+        }
+
+        function skipCountdown() {
+            clearInterval(countdownInterval);
+            showPage2();
+        }
+
+        window.addEventListener('load', () => {
+            animateIn(page1);
+            animateTitle();
+            setTimeout(startCountdown, 1500);
+        });
+
+        /* === NEW: 3D Parallax Mouse Move Effect for the first card === */
+        page1.addEventListener('mousemove', (e) => {
+            if (!page1.classList.contains('active')) return;
+
+            let rect = card1.getBoundingClientRect();
+            let x = e.clientX - rect.left - rect.width / 2;
+            let y = e.clientY - rect.top - rect.height / 2;
+
+            let rotateY = (x / rect.width) * 25; // Tilt intensity
+            let rotateX = -(y / rect.height) * 25; // Tilt intensity
+
+            // Apply the transform. Added a subtle translateZ for more depth.
+            card1.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05) translateZ(20px)`;
+        });
+
+        page1.addEventListener('mouseleave', () => {
+            // Reset transform when mouse leaves
+            card1.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1) translateZ(0)`;
+        });
+        /* === END NEW === */
+    </script>
+</body>
+
+</html>
